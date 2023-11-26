@@ -1,5 +1,65 @@
-﻿<h3>NewVacancy</h3>
+﻿@page "/cadastro-vaga"
+@inject Data.ApplicationServices service
+
+
+    <div class="vacancy-container">
+        <div class="vacancy-content">
+            <div class="row">
+                <div class="col-12 bg-light m-2 justify-content-start border">
+                    <div class="p-3 mb-3 bg-primary text-white text-center"><h5><strong>Cadastro de vaga</strong></h5></div>
+                    <EditForm Model="@vacancy" OnSubmit="@Submit" FormName="vacancy">
+                        <div class="form-group">
+                            <label for="title">Titulo</label>
+                            <input type="text" id="title" class="form-control" @bind-value="@vacancy.Title" placeholder="Digite" required />
+                        </div>
+                        <br/>
+                        <div class="form-group">
+                            <label for="title">Descrição</label>
+                            <textarea type="text" id="title" class="form-control" @bind="@vacancy.Description" placeholder="Digite" rows="7" required/>
+                        </div>
+                        <br/>
+                        <div class="form-group">
+                            <label for="title">Empresa</label>
+                            <input type="text" id="title" class="form-control" @bind-value="@vacancy.Company" placeholder="Digite" required />
+                        </div>
+                        <br/>
+                        <div class="form-group">
+                            <label for="title">Local</label>
+                            <input type="text" id="title" class="form-control" @bind-value="@vacancy.Location" placeholder="Digite" required />
+                        </div>
+                        <br/>
+                        <div class="form-group">
+                            <label for="title">Salário</label>
+                            <input type="number" id="title" class="form-control" @bind-value="@vacancy.Salary" placeholder="0.0" required />
+                        </div>
+                        <br/>
+                    <div class="text-center p-3 mb-3">
+                        @if(saving){
+                        <button class="btn btn-info" disabled><div class="spinner"></div></button>
+                        }else{
+                        <button class="btn btn-info" type="submit">Avançar</button>
+                        }
+                    </div>                    
+                </EditForm>
+                </div>
+            </div>  
+        </div>
+    </div>
+    
+
+
 
 @code {
+
+    public Data.Vacancy vacancy {get; set;} = new ();
+    public bool saving = false;
+    private async Task Submit()
+    {
+        vacancy.CreatedAt = DateTime.UtcNow;
+        saving = true;
+        await service.AddVacancyAsync(vacancy);
+        saving = false;
+        vacancy = new ();
+    }
 
 }
