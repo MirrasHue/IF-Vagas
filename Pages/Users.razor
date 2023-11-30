@@ -1,0 +1,104 @@
+﻿@page "/users"
+
+@inject ApplicationServices service
+@inject IJSRuntime JsRuntime
+@inject NavigationManager navigationManager
+@inject StateContainer stateContainer
+
+<h1>Users</h1>
+
+<div class="container">
+
+    <div class="row bg-light">
+        <table class="table table-bordered">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Id</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Password</th>
+                    <th>Is Admin</th>
+                    
+                </tr>
+            </thead>
+            <tbody>
+                @if (AllUsers.Any())
+                {
+                    @foreach (var user in AllUsers)
+                    {
+                        <tr>
+                            <td>@user.Id</td>
+                            <td>@user.Name</td>
+                            <td>@user.Email</td>
+                            <td>@user.Password</td>
+                            <td>@user.IsAdmin</td>
+
+                            <td>
+                                <button class="btn btn-primary" @onclick="(()=>ShowProjectsFrom(user))">Show Projects</button>
+                            </td>
+                            <td>
+                                <button class="btn btn-secondary" @onclick="(()=>NavigateToEdit(user))">Edit</button>
+                            </td>
+                            <td>
+                                <button class="btn btn-danger" @onclick="(()=>DeleteUser(user))">Delete</button>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr><td colspan="6"><strong>There are no users registered</strong></td></tr>
+                }
+            </tbody>
+        </table>
+
+        @if(showMessage)
+        {
+            <p style="color: red;">@DeletedUserName was deleted successfully</p>
+        }
+
+        <NavLink href="/new-user">Add New User</NavLink>
+    </div>
+</div>
+
+
+@code {
+
+    List<User> AllUsers = new List<User>();
+    bool showMessage = false;
+    string? DeletedUserName;
+    protected override async Task OnInitializedAsync()
+    {
+        stateContainer.user = null;
+        await UpdateUsers();
+    }
+
+    private async Task UpdateUsers()
+    {
+        AllUsers = await service.GetUsersAsync();
+    }
+
+    private async Task DeleteUser(User user)
+    {
+        bool confirmed = await JsRuntime.InvokeAsync<bool>("confirm", "Are you sure?");
+        if (confirmed)
+        {
+            showMessage = true;
+            DeletedUserName = user.Name;
+            await service.DeleteUserAsync(user);
+            await UpdateUsers();
+        }
+        else
+            showMessage = false;
+    }
+
+    private void NavigateToEdit(User user) {
+        stateContainer.SetUser(user);
+        navigationManager.NavigateTo("/new-user");
+    }
+
+    private void ShowProjectsFrom(User user) {
+        stateContainer.SetUser(user);
+        navigationManager.NavigateTo("/projects");
+    }
+}
