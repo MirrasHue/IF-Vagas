@@ -32,10 +32,16 @@
                             <td>@user.Email</td>
                             <td>@user.Password</td>
                             <td>@user.IsAdmin</td>
+
+                            <td>
+                                <button class="btn btn-primary" @onclick="(()=>ShowProjectsFrom(user))">Show Projects</button>
+                            </td>
+                            <td>
+                                <button class="btn btn-secondary" @onclick="(()=>NavigateToEdit(user))">Edit</button>
+                            </td>
                             <td>
                                 <button class="btn btn-danger" @onclick="(()=>DeleteUser(user))">Delete</button>
                             </td>
-                            <td><button class="btn" @onclick="(()=>NavigateToEdit(user))">Edit</button></td>
                         </tr>
                     }
                 }
@@ -51,7 +57,7 @@
             <p style="color: red;">@DeletedUserName was deleted successfully</p>
         }
 
-        <NavLink href="/newuser">Add New User</NavLink>
+        <NavLink href="/new-user">Add New User</NavLink>
     </div>
 </div>
 
@@ -63,6 +69,7 @@
     string? DeletedUserName;
     protected override async Task OnInitializedAsync()
     {
+        stateContainer.user = null;
         await UpdateUsers();
     }
 
@@ -86,7 +93,12 @@
     }
 
     private void NavigateToEdit(User user) {
-        stateContainer.UpadateUser(user);
-        navigationManager.NavigateTo("/NewUser");
+        stateContainer.SetUser(user);
+        navigationManager.NavigateTo("/new-user");
+    }
+
+    private void ShowProjectsFrom(User user) {
+        stateContainer.SetUser(user);
+        navigationManager.NavigateTo("/projects");
     }
 }
