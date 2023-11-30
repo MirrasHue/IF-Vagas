@@ -1,5 +1,67 @@
-﻿<h3>NewProject</h3>
+﻿@page "/new-project"
+
+@inject ApplicationServices service
+@inject StateContainer stateContainer
+
+ <div class="row m-5">
+        <div class="col-5 bg-light m-2 justify-content-start">
+            <div class="p-3 mb-3 bg-primary text-white text-center">New Project</div>
+            <EditForm Model="@project">
+                <div class="form-group">
+                    <label for="name">Name</label>
+                    <input type="text" id="name" class="form-control" @bind-value="@project.Name" />
+                </div>
+                <div class="form-group">
+                    <label for="desc">Description</label>
+                    <input type="text" id="desc" class="form-control" @bind="@project.Description" />
+                </div>
+                <div class="form-group">
+                    <label for="url">URL</label>
+                    <input type="text" id="url" class="form-control" @bind="@project.WebsiteURL" />
+                </div>
+                <div class="text-center p-3 mb-3">
+                    <button class="btn btn-info" @onclick="AddProject">Save</button>
+                </div>
+            </EditForm>
+
+            @if(showMessage)
+            {
+                <p style="color: red;">@message</p>
+            }
+
+            <NavLink href="/projects">@user.Name's projects</NavLink>
+        </div>
+        </div>
 
 @code {
+    public Project project { get; set; } = new ();
+    User user { get; set; } = new ();
+    bool showMessage = false;
+    string? message;
 
+    private async Task AddProject() {
+        if (stateContainer.project is null){
+            project.UserId = user.Id;
+
+            await service.AddProjectAsync(project);
+            message = "Project added successfully";
+        } else {
+            await service.UpdateProjectAsync(project);
+            message = "Project updated successfully";
+            stateContainer.project = null;
+        }
+        project = new ();
+
+        showMessage = true;
+    }
+
+    protected override void OnInitialized(){
+        if (stateContainer.project is not null){
+            project = stateContainer.project;
+        }
+
+        if (stateContainer.user is not null){
+            user = stateContainer.user;
+        }
+    }
 }

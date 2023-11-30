@@ -1,4 +1,4 @@
-﻿@page "/"
+﻿@page "/users"
 
 @inject ApplicationServices service
 @inject IJSRuntime JsRuntime
@@ -22,9 +22,9 @@
                 </tr>
             </thead>
             <tbody>
-                @if (Users.Any())
+                @if (AllUsers.Any())
                 {
-                    @foreach (var user in Users)
+                    @foreach (var user in AllUsers)
                     {
                         <tr>
                             <td>@user.Id</td>
@@ -64,7 +64,7 @@
 
 @code {
 
-    List<User> Users = new List<User>();
+    List<User> AllUsers = new List<User>();
     bool showMessage = false;
     string? DeletedUserName;
     protected override async Task OnInitializedAsync()
@@ -75,7 +75,7 @@
 
     private async Task UpdateUsers()
     {
-        Users = await service.GetUsersAsync();
+        AllUsers = await service.GetUsersAsync();
     }
 
     private async Task DeleteUser(User user)
