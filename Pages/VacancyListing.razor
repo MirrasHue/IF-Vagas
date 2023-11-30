@@ -1,0 +1,78 @@
+@page "/listagem-vagas"
+@inject Data.ApplicationServices service
+
+
+<div class="listingContainer">
+    <div class="listingContent">
+    @if(loading){
+        <div class="loading">
+            <span class="loader"></span>
+        </div>
+    }else{
+
+    @if(vacancies.Count > 0){
+
+        <div class="vacancyList">
+            @foreach(var vacancy in vacancies){
+                <div class="vacancyItem">
+                    
+
+                    <div class="header">
+                        <div class="header-title">@vacancy.Title</div>
+                        <button class="btn btn-info" >Candidatar</button>
+                    </div>
+
+                    <div class="infos">
+                        <div class = "infos-item">@vacancy.Company</div>
+                        <div class = "infos-item">@vacancy.Location</div>
+                    </div>
+
+                    <div class="description">
+                        @vacancy.Description
+                    </div>
+
+                    <div class="footer">
+                        vaga postada em @vacancy.CreatedAt
+                    </div>
+
+                </div>
+            }
+        </div>
+        
+
+    }else{
+
+        <div class = "noResults">
+            <h1>Nenhuma vaga cadastrada</h1>
+        </div>
+
+    }
+
+    }
+    </div>
+</div>
+
+
+
+
+@code{
+
+    public List<Data.Vacancy> vacancies = new List<Data.Vacancy>();
+    public bool loading = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await UpdateUsers();
+    }
+
+    private async Task UpdateUsers()
+    {
+        loading = true;
+        vacancies = await service.GetVacanciesAsync();
+        vacancies.Reverse();
+        loading = false;
+    }
+
+
+
+}

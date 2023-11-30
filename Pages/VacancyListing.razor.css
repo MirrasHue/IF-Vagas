@@ -1,0 +1,132 @@
+.listingContainer{
+    width:95vw;
+    margin: 0 auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow-x: hidden;
+}
+
+.listingContent{
+
+    width: 1200px;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: start;
+
+}
+
+.noResults>h1{
+
+    font-size: 30px;
+    font-weight: bolder;
+    color: #a3a3a3;
+    
+}
+
+.vacancyList{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    color: #444;
+    overflow-x: hidden;
+
+}
+
+.vacancyItem{
+    border: 1px solid #555;
+    border-radius: 5px;
+    font-size: 150%;
+    width: 90%;
+    height: 220px;
+    margin-bottom: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 10px;
+}
+
+.header{
+    width: 100%;
+    height: 20%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.infos{
+    width: 100%;
+    height: 20%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: start;   
+}
+
+.infos-item{
+    font-size: 12px;
+    
+}
+
+.header-title{
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.description{
+    width: 100%;
+    height: 50%;
+    font-size: 13px;
+    padding-top: 5px;
+    background-color: #eeeeee;
+    overflow: hidden;
+}
+
+.footer{
+    width: 100%;
+    height: 10%;
+    font-size: 13px;
+    color: #757575;
+}
+
+.loading{
+    width: 100%;
+    height: 300px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.loader {
+    width: 48px;
+    height: 48px;
+    border: 5px solid #143272;
+    border-bottom-color: transparent;
+    border-radius: 50%;
+    display: inline-block;
+    box-sizing: border-box;
+    animation: rotation 1s linear infinite;
+    }
+
+    @keyframes rotation {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+    } 
+
+@media screen and (max-width:1200px){
+    .listingContent{
+        width: 800px;
+    }
+}
+
+@media screen and (max-width:800px){
+    .listingContent{
+        width: 90%;
+    }
+}
