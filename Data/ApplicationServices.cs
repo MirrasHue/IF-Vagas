@@ -121,6 +121,15 @@ public class ApplicationServices
         return await dbContext.Projects.ToListAsync();
     }
 
+    public async Task<List<Project>> GetProjectsFromUserAsync(User user)
+    {
+        var UserProjects = await dbContext.Users
+            .Include(u => u.Projects)
+            .FirstOrDefaultAsync(u => u.Id == user.Id);
+        
+        return UserProjects?.Projects ?? new List<Project>();
+    }
+
     public async Task<Project> AddProjectAsync(Project proj)
     {
         try
@@ -155,7 +164,6 @@ public class ApplicationServices
 
     public async Task DeleteProjectAsync(Project proj)
     {
-        // We also need to delete the project from the user's project list 
         try
         {
             dbContext.Projects.Remove(proj);
