@@ -1,13 +1,20 @@
 ﻿@page "/"
-
+@inject IF_VagasAuthenticationStateProvider IF_VagasAuthenticationStateProvider
 @inject ApplicationServices service
 @inject IJSRuntime JsRuntime
 @inject NavigationManager navigationManager
 @inject StateContainer stateContainer
-
+@inject NavigationManager NavigationManager;
+<div>Email: @IF_VagasAuthenticationStateProvider.CurrentUser.Email</div>
+<button type="button" class="btn btn-success" @onclick="LogoutAsync">Logout</button>
 <VacancyListing></VacancyListing>
 
 
 @code {
 
+    public async Task LogoutAsync()
+    {
+        await IF_VagasAuthenticationStateProvider.LogoutAsync();
+        NavigationManager.NavigateTo("/login", true);
+    }
 }

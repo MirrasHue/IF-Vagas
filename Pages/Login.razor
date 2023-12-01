@@ -1,0 +1,29 @@
+@page "/login"
+@inject IF_VagasAuthenticationStateProvider IF_VagasAuthenticationStateProvider
+@inject NavigationManager NavigationManager;
+
+
+<h3>Login</h3>
+<button type="button" class="btn btn-success" @onclick="LoginAsync" >Login</button>
+<button type="button" class="btn btn-success" @onclick="LogoutAsync">Logout</button>
+<button type="button" class="btn btn-success" @onclick="HandlleChanged">Refresh</button>
+
+<div>Email: @IF_VagasAuthenticationStateProvider.CurrentUser.Email</div>
+
+@code {
+    public async Task LoginAsync()
+    {
+        await IF_VagasAuthenticationStateProvider.LoginAsync("Maria", "321");
+        await IF_VagasAuthenticationStateProvider.GetAuthenticationStateAsync();
+        NavigationManager.NavigateTo("/", true);    
+    }
+    public void HandlleChanged(){
+
+        NavigationManager.NavigateTo("/", true);    
+
+    }
+    public async Task LogoutAsync()
+    {
+        await IF_VagasAuthenticationStateProvider.LogoutAsync();
+    }
+}

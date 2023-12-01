@@ -1,3 +1,5 @@
+using System.Security.Claims;
+
 namespace IF_Vagas.Data;
 
 public class Vacancy
@@ -19,6 +21,18 @@ public class User
     public string? Password { get; set; }
     public bool IsAdmin { get; set; }
     public List<Project>? Projects { get; set; }
+    public ClaimsPrincipal ToClaimsPrincipal()=> new ( new ClaimsIdentity(
+        new Claim[]{
+            new (ClaimTypes.Name, Name),
+            new (ClaimTypes.Hash, Password),
+        }, "IF-Vagas")  
+    );
+    public static User FromClaimsPrincipal(ClaimsPrincipal principal) => new()
+    {
+        Name = principal.FindFirstValue(ClaimTypes.Name),
+        Password = principal.FindFirstValue(ClaimTypes.Hash),
+        Email = principal.FindFirstValue(nameof(Email)),
+    };
 }
 
 public class Project
