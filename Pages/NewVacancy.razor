@@ -1,5 +1,7 @@
 ﻿@page "/cadastro-vaga"
 @inject Data.ApplicationServices service
+@inject IJSRuntime JsRuntime
+@inject NavigationManager NavManager
 
 
     <div class="vacancy-container">
@@ -58,11 +60,22 @@
     public bool saving = false;
     private async Task Submit()
     {
+        try{
         vacancy.CreatedAt = DateTime.UtcNow;
         saving = true;
         await service.AddVacancyAsync(vacancy);
         saving = false;
         vacancy = new ();
+        bool confirmed = await JsRuntime.InvokeAsync<bool>("confirm", "Vaga cadastrada! Deseja voltar para a listagem?");
+        if(confirmed){
+            NavManager.NavigateTo("/");
+        }
+        }catch{
+            bool confirmed = await JsRuntime.InvokeAsync<bool>("confirm", "Ocorreu um erro ao salvar a vaga. Tente novamente mais tarde.");
+        }
+
+
+
     }
 
 }
