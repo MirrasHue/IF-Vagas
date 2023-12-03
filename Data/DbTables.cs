@@ -23,15 +23,16 @@ public class User
     public List<Project>? Projects { get; set; }
     public ClaimsPrincipal ToClaimsPrincipal()=> new ( new ClaimsIdentity(
         new Claim[]{
-            new (ClaimTypes.Name, Name),
+            new (ClaimTypes.Email, Email),
             new (ClaimTypes.Hash, Password),
-        }, "IF-Vagas")  
+            IsAdmin ? new(ClaimTypes.Role, "admin") : new(ClaimTypes.Role, "user"),
+        }.Where(c=> c!= null), "IF-Vagas")  
     );
     public static User FromClaimsPrincipal(ClaimsPrincipal principal) => new()
     {
-        Name = principal.FindFirstValue(ClaimTypes.Name),
+        Email = principal.FindFirstValue(ClaimTypes.Email),
         Password = principal.FindFirstValue(ClaimTypes.Hash),
-        Email = principal.FindFirstValue(nameof(Email)),
+        Name = principal.FindFirstValue(nameof(Name)),
     };
 }
 

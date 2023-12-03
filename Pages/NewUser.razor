@@ -1,5 +1,5 @@
 ﻿@page "/new-user"
-
+@attribute [AllowAnonymous]
 @inject ApplicationServices service
 @inject StateContainer stateContainer
 
@@ -19,9 +19,14 @@
                     <label for="pword">Password</label>
                     <input type="text" id="password" class="form-control" @bind="@user.Password" />
                 </div>
+                
                 <div class="form-group">
-                    <label for="admin">Is Admin</label>
-                    <input type="checkbox" id="isAdmin" @bind="@user.IsAdmin" />
+                    <AuthorizeView Roles="admin">
+                        <Authorized Context="adminContext">
+                           <label for="admin">Is Admin</label>
+                            <input type="checkbox" id="isAdmin" @bind="@user.IsAdmin" />
+                        </Authorized>
+                    </AuthorizeView>  
                 </div>
                 <div class="text-center p-3 mb-3">
                     <button class="btn btn-info" @onclick="AddUser">Save</button>
@@ -32,8 +37,12 @@
             {
                 <p style="color: red;">@message</p>
             }
-
-            <NavLink href="/users">List all Users</NavLink>
+            <AuthorizeView Roles="admin">
+                <Authorized Context="adminContext">
+                    <NavLink href="/users">List all Users</NavLink>
+                </Authorized>
+            </AuthorizeView> 
+            
         </div>
         </div>
 

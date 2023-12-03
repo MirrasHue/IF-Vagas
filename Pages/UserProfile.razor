@@ -1,0 +1,46 @@
+@page "/user-profile"
+@attribute [Authorize(Roles ="admin, user")]
+@inject IF_VagasAuthenticationStateProvider IF_VagasAuthenticationStateProvider
+@inject NavigationManager NavigationManager
+@inject StateContainer stateContainer
+<div  class="card col-lg-4 mx-auto p-3 mt-3">
+    <h3>Wellcome back, @IF_VagasAuthenticationStateProvider.CurrentUser.Name!</h3>          
+        <hr>
+        <div class=" p3 ">
+            <h4>@IF_VagasAuthenticationStateProvider.CurrentUser.Name</h4>
+            <p>@IF_VagasAuthenticationStateProvider.CurrentUser.Email</p>
+        </div>
+        <hr>
+        <h4>Actions</h4>
+        <ul class="text-left p-3 mb-1">
+            <li><NavLink href="/new-project">Add project </NavLink></li>
+            <li> <NavLink href="/cadastro-vaga">Add vacancy</NavLink></li>
+            @* @if(IF_VagasAuthenticationStateProvider.CurrentUser.IsAdmin){
+                <li><NavLink href="/users">Users</NavLink></li>
+            } *@
+            <AuthorizeView Roles="admin">
+                <Authorized>
+                    <li><NavLink href="/users">Users</NavLink></li>
+                </Authorized>
+            </AuthorizeView>
+        </ul>
+        <div class="text-left p-3 mb-1">
+            <button class="btn btn-secondary" @onclick="(()=>NavigateToEdit(IF_VagasAuthenticationStateProvider.CurrentUser))">Edit Profile</button>
+            <button class="btn btn-danger" @onclick="LogoutAsync">Logout</button>
+        </div>
+
+</div>
+
+@code{
+
+    private async Task LogoutAsync()
+    {
+        await IF_VagasAuthenticationStateProvider.LogoutAsync();
+        NavigationManager.NavigateTo("/login");
+    }
+    private void NavigateToEdit(User user) {
+        stateContainer.SetUser(user);
+        NavigationManager.NavigateTo("/new-user");
+    }
+
+}
