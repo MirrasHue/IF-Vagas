@@ -1,4 +1,5 @@
-
+@inject IF_VagasAuthenticationStateProvider IF_VagasAuthenticationStateProvider
+@inject NavigationManager NavigationManager;
     <nav class="navbar navbar-expand-lg navbar-light custom-nav">
         <a class="m-3" href="#"><h3>IF VAGAS</h3></a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -22,12 +23,70 @@
             </ul>
             <ul class="navbar-nav">
                 <li class="nav-item">
-                    <a class="btn btn-primary m-2" href="#">Login</a>
+                    <a class="btn btn-link m-2" href="/users">USUÁRIOS</a>
+                </li>
+                @* <li class="nav-item">
+                    <a class="btn btn-link m-2" href="/projects">PROJETOS</a>
+                </li> *@
+                <li class="nav-item">
+                    <a class="btn btn-link m-2" href="/cadastro-vaga">CADASTRAR VAGA</a>
                 </li>
                 <li class="nav-item">
-                    <a class="btn btn-primary m-2" href="#">Registrar</a>
+                    <a class="btn btn-link m-2" href="/new-user">CADASTRAR USUÁRIO</a>
                 </li>
             </ul>
+
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="btn btn-primary m-2" href="/login">Login</a>
+                </li>
+                
+                @if(IF_VagasAuthenticationStateProvider.IsAuthenticated){
+                   @*  <li class="nav-item">
+                        <a class="btn btn-primary m-2" href="/" @onclick="LogoutAsync">Logout</a>
+                    </li>
+                    <li class="nav-item">
+                        <div class="text-center">
+                            <i class="bi bi-person-circle"></i>
+                            <div class="div">@IF_VagasAuthenticationStateProvider.CurrentUser.Email</div>
+                        </div>
+                        
+                    </li> *@
+                    <div class="collapse navbar-collapse " id="navbarNavDarkDropdown">
+                        <ul class="navbar-nav">
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown">
+                                    @* <i class="bi bi-person-circle"></i> *@
+                                    @IF_VagasAuthenticationStateProvider.CurrentUser.Email
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-light">
+                                    <li><a class="dropdown-item" href="/" @onclick="LogoutAsync">Logout</a></li>
+                                    <li><a class="dropdown-item" href="/user-profile">Profile</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                }else{
+                    <li class="nav-item">
+                        <a class="btn btn-primary m-2" href="/new-user">Registrar</a>
+                    </li>
+                }
+                            
+            </ul>
+            
         </div>
     </nav>
 
+
+@code{
+    protected override async Task OnInitializedAsync()
+    {
+        await IF_VagasAuthenticationStateProvider.GetAuthenticationStateAsync();
+    }
+    public async Task LogoutAsync()
+    {
+        await IF_VagasAuthenticationStateProvider.LogoutAsync();
+        NavigationManager.NavigateTo("/login", true); 
+        
+    }
+}

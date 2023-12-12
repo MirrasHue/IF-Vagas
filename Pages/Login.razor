@@ -1,0 +1,74 @@
+@page "/login"
+@attribute [AllowAnonymous]
+@inject IF_VagasAuthenticationStateProvider IF_VagasAuthenticationStateProvider
+@inject NavigationManager NavigationManager;
+<div class="row m-5">
+    <div class="card mx-auto mt-3 col-3 bg-light justify-content-start" >
+        <div class="p-3 mb-3 bg-primary text-white text-center">Login</div>
+            <EditForm Model="@loginModel"  OnValidSubmit="LoginAsync">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <InputText class="form-control" @bind-Value="loginModel.Email" type="email" />
+                </div>
+                <div class="form-group">
+                    <label for="password">Password:</label>
+                    <InputText class="form-control" @bind-Value="loginModel.Password" type="password"/>
+                </div>
+                <div class="text-center p-3 mb-1">
+                    <button class="btn btn-primary">Login</button>
+                </div>
+                <NavLink href="/new-user">Sign up</NavLink>
+                </EditForm>
+                @if(showMessage)
+                {
+                    <p style="color: red;">Login failed! Check your credentials.</p>
+                }
+    </div>
+</div>
+@* <button type="button" class="btn btn-success" @onclick="LoginAsync" >Login</button>
+<button type="button" class="btn btn-success" @onclick="LogoutAsync">Logout</button>
+<button type="button" class="btn btn-success" @onclick="HandlleChanged">Refresh</button>
+<div>User: @IF_VagasAuthenticationStateProvider.CurrentUser.Name</div>
+ *@
+
+
+
+@code {
+    private LoginModel loginModel = new LoginModel();
+    bool showMessage = false;
+    private class LoginModel
+    {
+        public string Email { get; set; }
+        public string Password { get; set; }
+        public LoginModel()
+        {
+            Email = "";
+            Password = "";
+        }
+    }
+    protected override async Task OnInitializedAsync()
+    {
+        await IF_VagasAuthenticationStateProvider.GetAuthenticationStateAsync();
+    }
+    public async Task LoginAsync()
+    {
+        await IF_VagasAuthenticationStateProvider.LoginAsync(loginModel.Email, loginModel.Password);
+        await IF_VagasAuthenticationStateProvider.GetAuthenticationStateAsync();
+        if(!IF_VagasAuthenticationStateProvider.IsAuthenticated){
+            showMessage= true;
+        }else{
+            NavigationManager.NavigateTo("/", true);            
+        }
+    }
+    public void HandlleChanged(){
+
+        NavigationManager.NavigateTo("/login", true);    
+
+    }
+    public async Task LogoutAsync()
+    {
+        await IF_VagasAuthenticationStateProvider.LogoutAsync();
+    }
+}

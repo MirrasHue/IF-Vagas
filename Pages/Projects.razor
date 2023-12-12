@@ -1,10 +1,10 @@
 ﻿@page "/projects"
-
+@attribute [Authorize(Roles ="admin, user")]
 @inject ApplicationServices service
 @inject IJSRuntime JsRuntime
 @inject NavigationManager navigationManager
 @inject StateContainer stateContainer
-
+@inject IF_VagasAuthenticationStateProvider IF_VagasAuthenticationStateProvider
 <h1>Projects From @user.Name</h1>
 
 <div class="container">
@@ -68,7 +68,15 @@
 
     private async Task UpdateProjects()
     {
-        UserProjects = await service.GetProjectsFromUserAsync(user);
+        //limita qual usuario vai ser carregada para visualizacao. Caso seja um admin ele mostra o usuario carregado da pagina de listagem de projetos
+        if(IF_VagasAuthenticationStateProvider.CurrentUser.IsAdmin){
+            UserProjects = await service.GetProjectsFromUserAsync(user);
+        }else{
+            user= IF_VagasAuthenticationStateProvider.CurrentUser;
+            UserProjects = await service.GetProjectsFromUserAsync(user);
+        }
+        
+        
     }
 
     private async Task DeleteProject(Project proj)

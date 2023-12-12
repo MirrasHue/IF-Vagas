@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Components.Web;
 using Microsoft.EntityFrameworkCore;
 using IF_Vagas.Data;
 using IF_Vagas.Shared;
+using Microsoft.AspNetCore.Components.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +13,9 @@ builder.Services.AddServerSideBlazor();
 builder.Services.AddSingleton<StateContainer>();
 builder.Services.AddDbContext<ApplicationDbContext>(options =>{options.UseSqlite("Data Source=Database.db");});
 builder.Services.AddScoped<ApplicationServices>();
+builder.Services.AddScoped<UserServices>();
+builder.Services.AddScoped<IF_VagasAuthenticationStateProvider>();
+builder.Services.AddScoped<AuthenticationStateProvider>(sp => sp.GetRequiredService<IF_VagasAuthenticationStateProvider>());
 
 var app = builder.Build();
 

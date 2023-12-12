@@ -1,13 +1,22 @@
 ﻿@page "/"
-
+@attribute [AllowAnonymous]
+@inject IF_VagasAuthenticationStateProvider IF_VagasAuthenticationStateProvider
 @inject ApplicationServices service
 @inject IJSRuntime JsRuntime
 @inject NavigationManager navigationManager
 @inject StateContainer stateContainer
-
+@inject NavigationManager NavigationManager;
 <VacancyListing></VacancyListing>
 
 
 @code {
-
+    protected override async Task OnInitializedAsync()
+    {
+        await IF_VagasAuthenticationStateProvider.GetAuthenticationStateAsync();
+    }
+    public async Task LogoutAsync()
+    {
+        await IF_VagasAuthenticationStateProvider.LogoutAsync();
+        NavigationManager.NavigateTo("/login", true);
+    }
 }
