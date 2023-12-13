@@ -42,7 +42,8 @@
                         </div>
                         <div>
                             <a class="btn btn-primary" href="">Candidatar</a>
-                            @if(IF_VagasAuthenticationStateProvider.CurrentUser.Id == vacancy.UserId)
+                            @if(IF_VagasAuthenticationStateProvider.CurrentUser.Id == vacancy.UserId ||
+                            IF_VagasAuthenticationStateProvider.CurrentUser.IsAdmin == true)
                             {
                                 <button class="btn btn-danger" @onclick="(()=>DeleteVacancy(vacancy))">deletar</button>
                             }

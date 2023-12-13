@@ -44,7 +44,9 @@
                         </div>
                         <div>
                             <button class="btn-sm btn-info" @onclick="(()=>RedirecionarDetalhe(vacancy))">ver detalhes</button>
-                            @if(IF_VagasAuthenticationStateProvider.CurrentUser.Id == vacancy.UserId){
+                            @if(IF_VagasAuthenticationStateProvider.CurrentUser.Id == vacancy.UserId ||
+                            IF_VagasAuthenticationStateProvider.CurrentUser.IsAdmin == true)
+                            {
                                 <button class="btn-sm btn-danger" @onclick="(()=>DeleteVacancy(vacancy))">deletar</button>
                             }
                         </div>
