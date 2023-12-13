@@ -1,5 +1,5 @@
 ﻿@page "/new-user"
-@attribute [Authorize(Roles ="admin, user")]
+@attribute [AllowAnonymous]
 @inject ApplicationServices service
 @inject StateContainer stateContainer
 
