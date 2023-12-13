@@ -3,6 +3,8 @@
 @inject Data.ApplicationServices service
 @inject IJSRuntime JsRuntime
 @inject NavigationManager NavManager
+@inject IF_VagasAuthenticationStateProvider IF_VagasAuthenticationStateProvider
+
 
 
     <div class="vacancy-container">
@@ -63,6 +65,7 @@
     {
         try{
         vacancy.CreatedAt = DateTime.UtcNow;
+        vacancy.UserId = IF_VagasAuthenticationStateProvider.CurrentUser.Id;
         saving = true;
         await service.AddVacancyAsync(vacancy);
         saving = false;

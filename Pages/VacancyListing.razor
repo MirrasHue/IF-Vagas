@@ -97,7 +97,15 @@
     }
 
     public void RedirecionarCadastro(){
-        NavManager.NavigateTo("/cadastro-vaga");
+
+        if(IF_VagasAuthenticationStateProvider.CurrentUser.Id == 0 || IF_VagasAuthenticationStateProvider.CurrentUser.Id == null)
+        {
+            NavManager.NavigateTo("/login");
+        }else
+        {
+            NavManager.NavigateTo("/cadastro-vaga");
+        }
+
     }
 
     public void RedirecionarDetalhe(Data.Vacancy vacancy)
