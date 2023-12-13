@@ -11,6 +11,9 @@ public class Vacancy
     public string? Location { get; set; }
     public double Salary { get; set; }
     public DateTime CreatedAt { get; set; }
+    public int UserId { get; set; }
+
+    public User? user {get; set;}
 }
 
 public class User
