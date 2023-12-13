@@ -1,5 +1,5 @@
 ﻿@page "/new-project"
-@attribute [AllowAnonymous]
+@attribute [Authorize(Roles ="admin, user")]
 @inject ApplicationServices service
 @inject StateContainer stateContainer
 

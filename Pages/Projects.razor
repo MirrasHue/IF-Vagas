@@ -1,5 +1,5 @@
 ﻿@page "/projects"
-@attribute [Authorize(Roles ="admin, user")]
+@attribute [AllowAnonymous]
 @inject ApplicationServices service
 @inject IJSRuntime JsRuntime
 @inject NavigationManager navigationManager

@@ -1,5 +1,5 @@
 ﻿@page "/cadastro-vaga"
-@attribute [AllowAnonymous]
+@attribute [Authorize(Roles ="admin, user")]
 @inject Data.ApplicationServices service
 @inject IJSRuntime JsRuntime
 @inject NavigationManager NavManager

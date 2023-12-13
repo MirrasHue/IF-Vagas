@@ -3,6 +3,8 @@
 @inject Data.ApplicationServices service
 @inject IJSRuntime JsRuntime
 @inject NavigationManager NavManager
+@inject IF_VagasAuthenticationStateProvider IF_VagasAuthenticationStateProvider
+
 
 
 <div class="listingContainer">
@@ -40,7 +42,9 @@
                         </div>
                         <div>
                             <button class="btn-sm btn-info" @onclick="(()=>RedirecionarDetalhe(vacancy))">ver detalhes</button>
-                            <button class="btn-sm btn-danger" @onclick="(()=>DeleteVacancy(vacancy))">deletar</button>
+                            @if(IF_VagasAuthenticationStateProvider.CurrentUser.Id == vacancy.UserId){
+                                <button class="btn-sm btn-danger" @onclick="(()=>DeleteVacancy(vacancy))">deletar</button>
+                            }
                         </div>
                     </div>
 
