@@ -52,6 +52,13 @@
     string? message;
 
     private async Task AddUser() {
+        showMessage = true;
+
+        if(!await service.IsUserEmailUnique(user.Email)){
+            message = "This e-mail address already exists, try another one";
+            return;
+        }
+
         if (stateContainer.user is null){
             await service.AddUserAsync(user);
             message = "User added successfully";
@@ -62,7 +69,6 @@
         }
 
         user = new ();
-        showMessage = true;
     }
 
     protected override void OnInitialized(){

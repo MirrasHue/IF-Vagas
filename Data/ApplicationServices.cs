@@ -69,6 +69,16 @@ public class ApplicationServices
         return await dbContext.Users.ToListAsync();
     }
 
+    public async Task<bool> IsUserEmailUnique(string? Email)
+    {
+        var existingUser = await dbContext.Users.FirstOrDefaultAsync(u => u.Email == Email);
+        
+        if(existingUser != null)
+            return false;
+
+        return true;
+    }
+
     public async Task<User> AddUserAsync(User user)
     {
         try
