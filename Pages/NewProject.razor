@@ -6,21 +6,21 @@
  <div class="row m-5">
         <div class="col-5 bg-light m-2 justify-content-start">
             <div class="p-3 mb-3 bg-primary text-white text-center">New Project</div>
-            <EditForm Model="@project">
+            <EditForm Model="@project" OnValidSubmit="AddProject">
                 <div class="form-group">
                     <label for="name">Name</label>
-                    <input type="text" id="name" class="form-control" @bind-value="@project.Name" />
+                    <input type="text" id="name" class="form-control" @bind-value="@project.Name" required/>
                 </div>
                 <div class="form-group">
                     <label for="desc">Description</label>
-                    <input type="text" id="desc" class="form-control" @bind="@project.Description" />
+                    <input type="text" id="desc" class="form-control" @bind="@project.Description" required/>
                 </div>
                 <div class="form-group">
                     <label for="url">URL</label>
-                    <input type="text" id="url" class="form-control" @bind="@project.WebsiteURL" />
+                    <input type="text" id="url" class="form-control" @bind="@project.WebsiteURL" required/>
                 </div>
                 <div class="text-center p-3 mb-3">
-                    <button class="btn btn-info" @onclick="AddProject">Save</button>
+                    <button class="btn btn-info">Save</button>
                 </div>
             </EditForm>
 
