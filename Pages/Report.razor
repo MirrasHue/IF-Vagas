@@ -1,0 +1,71 @@
+@page "/relatorio"
+@attribute [Authorize(Roles ="admin")]
+@inject ApplicationServices service
+@inject IJSRuntime JSRuntime
+@inject NavigationManager navigationManager
+@inject StateContainer stateContainer
+
+
+<div class = "listingContainer">
+    <div class = "listingContent">
+
+
+    @if(loading){
+        <div class="loading">
+                <span class="loader"></span>
+            </div>
+    }else{
+        <h3>Relatório</h3>
+        <div class="container" style="position: relative; height:30vh; width:90vw">
+            <canvas id="relatorio-canvas" ></canvas>
+        </div>
+    }
+
+
+    </div>
+</div>
+
+
+
+
+
+
+@code {
+
+    public List<Data.Vacancy> vacancies = new List<Data.Vacancy>();
+        public List<Data.User> users = new List<Data.User>();
+        public List<Data.Project> projects = new List<Data.Project>();
+
+        public bool loading = false;
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender) 
+    {
+        var data = new[] { users.Count, vacancies.Count,projects.Count };
+        var bg = new[] { "#5d8fc2", "#a5e398","#fcf283" };
+        var labels = new[] { "Usuário","Vagas","Projetos" };
+
+        var myConfig = new { data = data,bg = bg,labels = labels};
+
+        await JSRuntime.InvokeVoidAsync("setup", "relatorio-canvas",myConfig);
+}
+   
+    
+    protected override async Task OnInitializedAsync()
+    {
+        // stateContainer.user = null;
+        // await UpdateUsers();
+        loading = true;
+        vacancies = await service.GetVacanciesAsync();
+        users = await service.GetUsersAsync();
+        projects = await service.GetProjectsAsync();
+        loading = false;
+    }
+
+    // private async Task UpdateUsers()
+    // {
+    //     AllUsers = await service.GetUsersAsync();
+    // }
+
+    
+}
