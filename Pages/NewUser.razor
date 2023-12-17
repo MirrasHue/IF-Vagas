@@ -55,7 +55,8 @@
         showMessage = true;
 
         if(!await service.IsUserEmailUnique(user.Email)){
-            message = "This e-mail address already exists, try another one";
+            @* message = "This e-mail address already exists, try another one"; *@
+            message = "Já existe um usuário cadastrado com o e-mail informado.";
             return;
         }
 

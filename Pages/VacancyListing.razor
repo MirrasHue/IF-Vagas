@@ -15,23 +15,61 @@
         </div>
     }else{
 
-    @if(vacancies.Count > 0){
-
         <div class="vacancyList">
+            <AuthorizeView Roles="user,admin">
+                <Authorized>
+                    <div class = "listHeader">
+
+
+                        @if(showAllVacancies)
+                        {
+                        <button class = "listHeader-button" style = "border-bottom: #143272 3px solid;">
+                            <i class="bi bi-rss-fill"></i>
+                            Feed de vagas</button>
+                        <button class = "listHeader-button" @onclick="(()=>showMyVacancies())">
+                            <i class="bi bi-tag-fill"></i>
+                            Minhas vagas</button>
+                        }else{
+                        <button class = "listHeader-button" @onclick="(()=>showFeed())">
+                            <i class="bi bi-rss-fill"></i>
+                            Feed de vagas</button>
+                        <button class = "listHeader-button" style = "border-bottom: #143272 3px solid;">
+                            <i class="bi bi-tag-fill"></i>
+                            Minhas vagas</button>
+                        }
+
+                    </div>
+                
+                </Authorized>
+            </AuthorizeView> 
+        @if(vacancies.Count > 0){
+
+
+        
+
             @foreach(var vacancy in vacancies){
                 <div class="vacancyItem">
                     
 
                     <div class="header">
-                        <div class="header-title">@vacancy.Title</div>
-                        <button class="btn btn-info" >
-                            <a href="@vacancy.externalLinkToApply" target="_blank">Candidatar</a>
-                            </button>
+                        <div class="header-title">
+                            <i class="bi bi-briefcase-fill"></i>
+                            @vacancy.Title
+                        </div>
+                            <a class="btn btn-primary" href="@vacancy.externalLinkToApply" target="_blank">
+                                <i class="bi bi-send-check-fill"></i>
+                                Candidatar
+                            </a>
                     </div>
 
                     <div class="infos">
-                        <div class = "infos-item">@vacancy.Company</div>
-                        <div class = "infos-item">@vacancy.Location</div>
+                        <div class = "infos-item">
+                            <i class="bi bi-building"></i>
+                            @vacancy.Company
+                            </div>
+                        <div class = "infos-item">
+                            <i class="bi bi-signpost-fill"></i>
+                            @vacancy.Location</div>
                     </div>
 
                     <div class="description">
@@ -43,18 +81,22 @@
                             vaga postada em @vacancy.CreatedAt
                         </div>
                         <div>
-                            <button class="btn-sm btn-info" @onclick="(()=>RedirecionarDetalhe(vacancy))">ver detalhes</button>
+                            <a class="btn btn-primary" @onclick="(()=>RedirecionarDetalhe(vacancy))">
+                                <i class="bi bi-plus"></i>
+                                    ver detalhes
+                            </a>
                             @if(IF_VagasAuthenticationStateProvider.CurrentUser.Id == vacancy.UserId ||
                             IF_VagasAuthenticationStateProvider.CurrentUser.IsAdmin == true)
                             {
-                                <button class="btn-sm btn-danger" @onclick="(()=>DeleteVacancy(vacancy))">deletar</button>
+                                <a class="btn btn-danger" style = "margin-left:5px;" @onclick="(()=>DeleteVacancy(vacancy))">
+                                    <i class="bi bi-trash"></i>
+                                    deletar</a>
                             }
                         </div>
                     </div>
 
                 </div>
             }
-        </div>
         
 
     }else{
@@ -65,6 +107,7 @@
         </div>
 
     }
+    </div>
 
     }
     </div>
@@ -76,7 +119,9 @@
 @code{
 
     public List<Data.Vacancy> vacancies = new List<Data.Vacancy>();
+    public List<Data.Vacancy> Allvacancies = new List<Data.Vacancy>();
     public bool loading = false;
+    public bool showAllVacancies = true;
 
     protected override async Task OnInitializedAsync()
     {
@@ -86,8 +131,12 @@
     private async Task GetVacancies()
     {
         loading = true;
+        showAllVacancies = true;
         vacancies = await service.GetVacanciesAsync();
+        Allvacancies = new List<Data.Vacancy>();
         vacancies.Reverse();
+        Allvacancies.AddRange(vacancies);
+
         loading = false;
     }
 
@@ -102,7 +151,7 @@
 
     public void RedirecionarCadastro(){
 
-        if(IF_VagasAuthenticationStateProvider.CurrentUser.Id == 0 || IF_VagasAuthenticationStateProvider.CurrentUser.Id == null)
+        if(IF_VagasAuthenticationStateProvider.CurrentUser.Id == 0 || IF_VagasAuthenticationStateProvider.CurrentUser == null)
         {
             NavManager.NavigateTo("/login");
         }else
@@ -115,6 +164,26 @@
     public void RedirecionarDetalhe(Data.Vacancy vacancy)
     {
         NavManager.NavigateTo("/vagas/" + vacancy.Id.ToString());
+    }
+
+    public void showMyVacancies(){
+        @* vacancies = Allvacancies.Where(vacancy => vacancy.UserId == IF_VagasAuthenticationStateProvider.CurrentUser.Id); *@
+        vacancies = new List<Data.Vacancy>();
+        foreach(var v in Allvacancies)
+        {
+            if(v.UserId == IF_VagasAuthenticationStateProvider.CurrentUser.Id)
+            {
+                vacancies.Add(v);
+            }
+        }
+        showAllVacancies = false;
+    }
+
+    public void showFeed(){
+        vacancies = new List<Data.Vacancy>();
+        vacancies.AddRange(Allvacancies);
+        
+        showAllVacancies = true;
     }
 
 

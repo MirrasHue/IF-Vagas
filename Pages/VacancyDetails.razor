@@ -21,15 +21,18 @@
                     
 
                     <div class="header">
-                        <div class="header-title">@vacancy.Title</div>
-                        <button class="btn btn-info" >
-                            <a href="@vacancy.externalLinkToApply" target="_blank">Candidatar</a>
-                        </button>
+                        <div class="header-title">
+                            <i class="bi bi-briefcase-fill"></i>
+                            @vacancy.Title</div>
                     </div>
 
                     <div class="infos">
-                        <div class = "infos-item">@vacancy.Company</div>
-                        <div class = "infos-item">@vacancy.Location</div>
+                        <div class = "infos-item">
+                            <i class="bi bi-building"></i>
+                            @vacancy.Company</div>
+                        <div class = "infos-item">
+                            <i class="bi bi-signpost-fill"></i>
+                            @vacancy.Location</div>
                     </div>
 
                     <div class="description">
@@ -41,11 +44,16 @@
                             vaga postada em @vacancy.CreatedAt
                         </div>
                         <div>
-                            <a class="btn btn-primary" href="">Candidatar</a>
+                            <a class="btn btn-primary" href="@vacancy.externalLinkToApply" target="_blank">
+                                <i class="bi bi-send-check-fill"></i>
+                                Candidatar
+                            </a>
                             @if(IF_VagasAuthenticationStateProvider.CurrentUser.Id == vacancy.UserId ||
                             IF_VagasAuthenticationStateProvider.CurrentUser.IsAdmin == true)
                             {
-                                <button class="btn btn-danger" @onclick="(()=>DeleteVacancy(vacancy))">deletar</button>
+                                <button class="btn btn-danger" style = "margin-left:5px;" @onclick="(()=>DeleteVacancy(vacancy))">
+                                    <i class="bi bi-trash"></i>
+                                    deletar</button>
                             }
                         </div>
                     </div>
