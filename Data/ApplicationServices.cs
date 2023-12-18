@@ -61,6 +61,18 @@ public class ApplicationServices
             throw;
         }
     }
+
+    public async Task UpdateApplicationNumber(Vacancy vacancy)
+    {
+        try{
+            dbContext.Update(vacancy);
+            await dbContext.SaveChangesAsync();
+        }catch(Exception)
+        {
+            throw;
+        }
+    }
+
     /// End Vacancy services
 
     /// User services

@@ -56,7 +56,7 @@
                             <i class="bi bi-briefcase-fill"></i>
                             @vacancy.Title
                         </div>
-                            <a class="btn btn-primary" href="@vacancy.externalLinkToApply" target="_blank">
+                            <a class="btn btn-primary" href="@vacancy.externalLinkToApply" target="_blank" @onclick="(()=>increaseApplications(vacancy))" >
                                 <i class="bi bi-send-check-fill"></i>
                                 Candidatar
                             </a>
@@ -136,7 +136,10 @@
         Allvacancies = new List<Data.Vacancy>();
         vacancies.Reverse();
         Allvacancies.AddRange(vacancies);
-
+        @* foreach(var v in Allvacancies)
+        {
+            Console.WriteLine(v.Applications);
+        } *@
         loading = false;
     }
 
@@ -184,6 +187,11 @@
         vacancies.AddRange(Allvacancies);
         
         showAllVacancies = true;
+    }
+
+    public async Task increaseApplications(Vacancy vacancy){
+        vacancy.Applications = vacancy.Applications + 1;
+        await service.UpdateApplicationNumber(vacancy);
     }
 
 

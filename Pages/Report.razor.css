@@ -49,3 +49,24 @@
         transform: rotate(360deg);
     }
     } 
+
+
+    .report-grid{
+        display: grid;
+        grid-template-columns: auto auto;
+    }
+
+    .report-grid-item{
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: 20px;
+
+    }
+
+    @media screen and (max-width:768px) {
+        .report-grid{
+            grid-template-columns: auto;
+        }
+    }
