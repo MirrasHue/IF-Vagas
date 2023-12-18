@@ -44,7 +44,7 @@
                             vaga postada em @vacancy.CreatedAt
                         </div>
                         <div>
-                            <a class="btn btn-primary" href="@vacancy.externalLinkToApply" target="_blank">
+                            <a class="btn btn-primary" href="@vacancy.externalLinkToApply" target="_blank" @onclick="(()=>increaseApplications(vacancy))">
                                 <i class="bi bi-send-check-fill"></i>
                                 Candidatar
                             </a>
@@ -127,6 +127,12 @@
     public void RedirecionarListagem(){
         NavManager.NavigateTo("/");
     }
+
+    public async Task increaseApplications(Vacancy vacancy){
+    vacancy.Applications = vacancy.Applications + 1;
+    await service.UpdateApplicationNumber(vacancy);
+    }
+
 
 
 }
