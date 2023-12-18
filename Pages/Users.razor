@@ -4,20 +4,20 @@
 @inject IJSRuntime JsRuntime
 @inject NavigationManager navigationManager
 @inject StateContainer stateContainer
-
-<h1>Users</h1>
+@inject IF_VagasAuthenticationStateProvider IF_VagasAuthenticationStateProvider
 
 <div class="container">
+    <div class="col-12 bg-light m-2 justify-content-start border"></div>
+    <div class="p-3 mb-3 bg-primary text-white text-center"><h5><strong>Usuários</strong></h5>
 
     <div class="row bg-light">
         <table class="table table-bordered">
             <thead class="thead-dark">
                 <tr>
                     <th>Id</th>
-                    <th>Name</th>
+                    <th>Nome</th>
                     <th>Email</th>
-                    <th>Password</th>
-                    <th>Is Admin</th>
+                    <th>É Admin</th>
                     
                 </tr>
             </thead>
@@ -30,18 +30,18 @@
                             <td>@user.Id</td>
                             <td>@user.Name</td>
                             <td>@user.Email</td>
-                            <td>@user.Password</td>
                             <td>@user.IsAdmin</td>
 
                             <td>
-                                <button class="btn btn-primary" @onclick="(()=>ShowProjectsFrom(user))">Show Projects</button>
+                                <button class="btn btn-primary" @onclick="(()=>ShowProjectsFrom(user))">Projetos</button>
                             </td>
-                            <td>
-                                <button class="btn btn-secondary" @onclick="(()=>NavigateToEdit(user))">Edit</button>
-                            </td>
-                            <td>
-                                <button class="btn btn-danger" @onclick="(()=>DeleteUser(user))">Delete</button>
-                            </td>
+
+                            @if(user.Id != IF_VagasAuthenticationStateProvider.CurrentUser.Id)
+                            {
+                                <td>
+                                    <button class="btn btn-danger" @onclick="(()=>DeleteUser(user))">Deletar</button>
+                                </td>
+                            }
                         </tr>
                     }
                 }
@@ -57,10 +57,10 @@
             <p style="color: red;">@DeletedUserName was deleted successfully</p>
         }
 
-        <NavLink href="/new-user">Add New User</NavLink>
+        <NavLink href="/new-user">Cadastrar novo usuário</NavLink>
     </div>
 </div>
-
+</div>
 
 @code {
 

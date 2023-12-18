@@ -5,17 +5,18 @@
 @inject NavigationManager navigationManager
 @inject StateContainer stateContainer
 @inject IF_VagasAuthenticationStateProvider IF_VagasAuthenticationStateProvider
-<h1>Projects From @user.Name</h1>
 
 <div class="container">
+    <div class="col-12 bg-light m-2 justify-content-start border"></div>
+    <div class="p-3 mb-3 bg-primary text-white text-center"><h2><strong>Projetos do(a) @user.Name</strong></h2>
 
     <div class="row bg-light">
         <table class="table table-bordered">
             <thead class="thead-dark">
                 <tr>
                     <th>Id</th>
-                    <th>Name</th>
-                    <th>Description</th>
+                    <th>Nome</th>
+                    <th>Descrição</th>
                     <th>URL</th>
                 </tr>
             </thead>
@@ -31,10 +32,10 @@
                             <td>@project.WebsiteURL</td>
 
                             <td>
-                                <button class="btn btn-secondary" @onclick="(()=>NavigateToEdit(project))">Edit</button>
+                                <button class="btn btn-secondary" @onclick="(()=>NavigateToEdit(project))">Editar</button>
                             </td>
                             <td>
-                                <button class="btn btn-danger" @onclick="(()=>DeleteProject(project))">Delete</button>
+                                <button class="btn btn-danger" @onclick="(()=>DeleteProject(project))">Deletar</button>
                             </td>
                         </tr>
                     }
@@ -50,9 +51,14 @@
         {
             <p style="color: red;">@DeletedProjectName was deleted successfully</p>
         }
-        <button class="btn btn-primary" @onclick="(()=>NavigateToNewProject())">Add New Project</button>
-        <NavLink href="/users">List All Users</NavLink>
+
+        @if(user.Id == IF_VagasAuthenticationStateProvider.CurrentUser.Id)
+        {
+           <button class="btn btn-link" @onclick="(()=>NavigateToNewProject())">Addicionar projeto</button>
+        }
+
     </div>
+</div>
 </div>
 
 @code {
@@ -100,6 +106,7 @@
     }
     private void NavigateToNewProject() {
         stateContainer.SetUser(user);
+        stateContainer.SetProject(null);
         navigationManager.NavigateTo("/new-project");
     }
     protected override void OnInitialized(){
