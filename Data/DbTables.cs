@@ -15,6 +15,7 @@ public class Vacancy
     public int UserId { get; set; }
 
     public User? user {get; set;}
+    public int Applications {get; set;}
 }
 
 public class User
@@ -24,6 +25,7 @@ public class User
     public string? Email { get; set; }
     public string? Password { get; set; }
     public bool IsAdmin { get; set; }
+    public DateTime CreatedAt { get; set; }
     public List<Project>? Projects { get; set; }
     public ClaimsPrincipal ToClaimsPrincipal()=> new ( new ClaimsIdentity(
         new Claim[]{

@@ -70,6 +70,7 @@
     {
         try{
         vacancy.CreatedAt = DateTime.UtcNow;
+        vacancy.Applications = 0;
         vacancy.UserId = IF_VagasAuthenticationStateProvider.CurrentUser.Id;
         saving = true;
         await service.AddVacancyAsync(vacancy);

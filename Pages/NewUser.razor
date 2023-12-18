@@ -59,7 +59,7 @@
             message = "Já existe um usuário cadastrado com o e-mail informado.";
             return;
         }
-
+        user.CreatedAt = DateTime.UtcNow;
         if (stateContainer.user is null){
             await service.AddUserAsync(user);
             message = "User added successfully";
