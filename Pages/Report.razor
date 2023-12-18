@@ -16,9 +16,22 @@
             </div>
     }else{
         <h3>Relatório</h3>
-        <div class="container" style="position: relative; height:30vh; width:90vw">
-            <canvas id="relatorio-canvas" ></canvas>
+        <br/>
+        <h6>Overview de usuários, vagas e projetos</h6>
+        <div class="container" style="position: relative; height:30vh; width:50vw;display:flex;justify-content:center;">
+            <canvas id="overview-canvas" ></canvas>
         </div>
+        <br/>
+        <h6>Distribuição de vagas ao longo dos meses</h6>
+        <div class="container" style="position: relative; height:30vh; width:50vw;display:flex;justify-content:center;">
+            <canvas id="vacancies-over-months-canvas" ></canvas>
+        </div>
+        <br/>
+        <h6>Adesão de novos usuários ao longo dos meses</h6>
+        <div class="container" style="position: relative; height:30vh; width:50vw;display:flex;justify-content:center;">
+            <canvas id="users-over-months-canvas" ></canvas>
+        </div>
+        
     }
 
 
@@ -38,29 +51,73 @@
 
         public bool loading = false;
 
+        protected override async Task OnInitializedAsync()
+        {
+            // stateContainer.user = null;
+            // await UpdateUsers();
+            loading = true;
+            vacancies = await service.GetVacanciesAsync();
+            users = await service.GetUsersAsync();
+            projects = await service.GetProjectsAsync();
+            loading = false;
+        }
 
     protected override async Task OnAfterRenderAsync(bool firstRender) 
     {
-        var data = new[] { users.Count, vacancies.Count,projects.Count };
-        var bg = new[] { "#5d8fc2", "#a5e398","#fcf283" };
-        var labels = new[] { "Usuário","Vagas","Projetos" };
-
-        var myConfig = new { data = data,bg = bg,labels = labels};
-
-        await JSRuntime.InvokeVoidAsync("setup", "relatorio-canvas",myConfig);
-}
-   
-    
-    protected override async Task OnInitializedAsync()
-    {
-        // stateContainer.user = null;
-        // await UpdateUsers();
-        loading = true;
-        vacancies = await service.GetVacanciesAsync();
-        users = await service.GetUsersAsync();
-        projects = await service.GetProjectsAsync();
-        loading = false;
+        await createOverviewChart();
+        await createVacanciesOverMonthsChart();
+        await createUsersOverMonthsChart();
     }
+
+    async Task createOverviewChart(){
+        var data = new[] { users.Count, vacancies.Count,projects.Count };
+        var bg = new[] { "#a5e398", "#5d8fc2","#fcf283" };
+        var labels = new[] { "Usuários","Vagas","Projetos" };
+
+        var myConfig = new { data = data,bg = bg,labels = labels,title = "Usuários, vagas e projetos",type = "bar"};
+
+        await JSRuntime.InvokeVoidAsync("setup", "overview-canvas",myConfig);
+    }
+
+    async Task createVacanciesOverMonthsChart(){
+        
+        int[] months = new int[13];
+        for(int i = 1;i<=12;i++)months[i] = 0;
+        foreach(var v in vacancies)
+        {
+            var m = v.CreatedAt.Month;
+            months[m]++;
+        }
+
+        var data = new[] { months[1],months[2],months[3],months[4],months[5],months[6],months[7],months[8],months[9],months[10],months[11],months[12] };
+        var bg = new[] { "#5d8fc2" };
+        var labels = new[] { "janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro" };
+
+        var myConfig = new { data = data,bg = bg,labels = labels, title = "Criação de vagas ao longo dos meses",type = "bar"};
+
+        await JSRuntime.InvokeVoidAsync("setup", "vacancies-over-months-canvas",myConfig);   
+    }
+
+    async Task createUsersOverMonthsChart(){
+                int[] months = new int[13];
+        for(int i = 1;i<=12;i++)months[i] = 0;
+        foreach(var v in users)
+        {
+            var m = v.CreatedAt.Month;
+            months[m]++;
+        }
+
+        var data = new[] { months[1],months[2],months[3],months[4],months[5],months[6],months[7],months[8],months[9],months[10],months[11],months[12] };
+        var bg = new[] { "#5d8fc2" };
+        var labels = new[] { "janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro" };
+
+        var myConfig = new { data = data,bg = bg,labels = labels, title = "Criação de vagas ao longo dos meses",type = "line"};
+
+        await JSRuntime.InvokeVoidAsync("setup", "users-over-months-canvas",myConfig); 
+    }
+
+    
+
 
     // private async Task UpdateUsers()
     // {

@@ -5,14 +5,14 @@ window.setup = (id,myConfig) => {
     const data = {
     labels: labels,
     datasets: [{
-        label: 'Usuários, vagas e projetos',
+        label: myConfig.title,
         data: myConfig.data,
         backgroundColor: myConfig.bg,
         borderWidth: 1
     }]
     };
     const config = {
-        type: 'bar',
+        type: myConfig.type,
         data: data,
         options: {
           scales: {
