@@ -1,0 +1,224 @@
+@page "/relatorio"
+@attribute [Authorize(Roles ="admin")]
+@inject ApplicationServices service
+@inject IJSRuntime JSRuntime
+@inject NavigationManager navigationManager
+@inject StateContainer stateContainer
+
+
+<div class = "listingContainer">
+    <div class = "listingContent">
+
+
+    @if(loading){
+        <div class="loading">
+                <span class="loader"></span>
+            </div>
+    }else{
+        <h3>Relatório</h3>
+        <br/>
+        <div class = "report-grid">
+
+            <div class = "report-grid-item">
+        <h6>Overview de usuários, vagas e projetos</h6>
+        <div class="container" style="position: relative; height:30vh; width:50vw;display:flex;justify-content:center;">
+            <canvas id="overview-canvas" ></canvas>
+        </div>
+                
+            </div>
+
+            <div class = "report-grid-item">
+        <h6>Inclusão de novas vagas ao longo dos meses</h6>
+        <div class="container" style="position: relative; height:30vh; width:50vw;display:flex;justify-content:center;">
+            <canvas id="vacancies-over-months-canvas" ></canvas>
+        </div>
+
+            </div>
+
+            <div class = "report-grid-item">
+        <h6>Adesão de novos usuários ao longo dos meses</h6>
+        <div class="container" style="position: relative; height:30vh; width:50vw;display:flex;justify-content:center;">
+            <canvas id="users-over-months-canvas" ></canvas>
+        </div>
+
+            </div>
+
+                        <div class = "report-grid-item">
+        <h6>Potenciais candidaturas ao longo dos meses</h6>
+        <div class="container" style="position: relative; height:30vh; width:50vw;display:flex;justify-content:center;">
+            <canvas id="applications-over-months-canvas" ></canvas>
+        </div>
+
+            </div>
+
+        <div class = "report-grid-item">
+            <h6>Top 5 Empresas com mais vagas anunciadas</h6>
+            <div class="container" style="position: relative; height:30vh; width:50vw;display:flex;justify-content:center;">
+                <canvas id="companies-canvas" ></canvas>
+            </div>
+        </div>
+
+            
+
+
+        </div>
+        <br/>
+        <br/>
+
+    
+
+        
+    }
+
+
+    </div>
+</div>
+
+
+
+
+
+
+@code {
+
+    public List<Data.Vacancy> vacancies = new List<Data.Vacancy>();
+        public List<Data.User> users = new List<Data.User>();
+        public List<Data.Project> projects = new List<Data.Project>();
+
+        public bool loading = false;
+
+        protected override async Task OnInitializedAsync()
+        {
+            // stateContainer.user = null;
+            // await UpdateUsers();
+            loading = true;
+            vacancies = await service.GetVacanciesAsync();
+            users = await service.GetUsersAsync();
+            projects = await service.GetProjectsAsync();
+            loading = false;
+        }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender) 
+    {
+        await createOverviewChart();
+        await createVacanciesOverMonthsChart();
+        await createUsersOverMonthsChart();
+        await createApplicationsOverMonthsChart();
+        await createCompaniesChart();
+    }
+
+    async Task createOverviewChart(){
+        var data = new[] { users.Count, vacancies.Count,projects.Count };
+        var bg = new[] { "#a5e398", "#5d8fc2","#fcf283" };
+        var labels = new[] { "Usuários","Vagas","Projetos" };
+
+        var myConfig = new { data = data,bg = bg,labels = labels,title = "Usuários, vagas e projetos",type = "bar"};
+
+        await JSRuntime.InvokeVoidAsync("setup", "overview-canvas",myConfig);
+    }
+
+    async Task createVacanciesOverMonthsChart(){
+        
+        int[] months = new int[13];
+        for(int i = 1;i<=12;i++)months[i] = 0;
+        foreach(var v in vacancies)
+        {
+            var m = v.CreatedAt.Month;
+            months[m]++;
+        }
+
+        var data = new[] { months[1],months[2],months[3],months[4],months[5],months[6],months[7],months[8],months[9],months[10],months[11],months[12] };
+        var bg = new[] { "#5d8fc2" };
+        var labels = new[] { "janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro" };
+
+        var myConfig = new { data = data,bg = bg,labels = labels, title = "Criação de vagas ao longo dos meses",type = "bar"};
+
+        await JSRuntime.InvokeVoidAsync("setup", "vacancies-over-months-canvas",myConfig);   
+    }
+
+    async Task createUsersOverMonthsChart(){
+                int[] months = new int[13];
+        for(int i = 1;i<=12;i++)months[i] = 0;
+        foreach(var v in users)
+        {
+            var m = v.CreatedAt.Month;
+            months[m]++;
+        }
+
+        var data = new[] { months[1],months[2],months[3],months[4],months[5],months[6],months[7],months[8],months[9],months[10],months[11],months[12] };
+        var bg = new[] { "#a5e398" };
+        var labels = new[] { "janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro" };
+
+        var myConfig = new { data = data,bg = bg,labels = labels, title = "Criação de novas contas ao longo dos meses",type = "line"};
+
+        await JSRuntime.InvokeVoidAsync("setup", "users-over-months-canvas",myConfig); 
+    }
+
+    async Task createApplicationsOverMonthsChart(){
+                int[] months = new int[13];
+        for(int i = 1;i<=12;i++)months[i] = 0;
+        foreach(var v in vacancies)
+        {
+            var m = v.CreatedAt.Month;
+            months[m]+= v.Applications;
+        }
+
+        var data = new[] { months[1],months[2],months[3],months[4],months[5],months[6],months[7],months[8],months[9],months[10],months[11],months[12] };
+        var bg = new[] { "#5d8fc2" };
+        var labels = new[] { "janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro" };
+
+        var myConfig = new { data = data,bg = bg,labels = labels, title = "Potenciais aplicações ao longo dos meses",type = "line"};
+
+        await JSRuntime.InvokeVoidAsync("setup", "applications-over-months-canvas",myConfig); 
+    }
+
+    async Task createCompaniesChart(){
+
+        Dictionary<string, int> hash = new Dictionary<string, int>();
+
+        foreach(var v in vacancies)
+        {
+            if(hash.ContainsKey(v.Company))
+            {
+                hash[v.Company]++;
+            }else
+            {
+                hash[v.Company] = 1;
+            }
+        }
+
+        string[] companies = new string[5];
+        int[] quantity = new int[5];
+
+        int i = 0;
+
+        foreach(var v in hash)
+        {
+            companies[i] = v.Key;
+            quantity[i] = v.Value;
+            i++;
+            if(i == 5)break;
+        }
+
+        
+
+        var data = quantity;
+        var bg = new[] { "#f08775" };
+        var labels = companies;
+
+        var myConfig = new { data = data,bg = bg,labels = labels, title = "Empresas com mais vagas",type = "bar"};
+
+        await JSRuntime.InvokeVoidAsync("setup", "companies-canvas",myConfig); 
+        
+
+    }
+
+
+
+    // private async Task UpdateUsers()
+    // {
+    //     AllUsers = await service.GetUsersAsync();
+    // }
+
+    
+}

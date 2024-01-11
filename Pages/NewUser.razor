@@ -1,0 +1,85 @@
+﻿@page "/new-user"
+@attribute [AllowAnonymous]
+@inject ApplicationServices service
+@inject StateContainer stateContainer
+
+ <div class="user-container">
+    <div class="user-content">
+        <div class="row">
+        <div class="col-12 bg-light m-2 justify-content-start border">
+            <div class="p-3 mb-3 bg-primary text-white text-center"><h5><strong>Cadastro de usuário</strong></h5></div>
+                <EditForm Model="@user" OnValidSubmit="AddUser">
+                    <div class="form-group">
+                        <label for="name">Nome</label>
+                        <input type="text" id="name" class="form-control" @bind-value="@user.Name" required/>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" class="form-control" @bind="@user.Email" required/>
+                    </div>
+                    <div class="form-group">
+                        <label for="pword">Senha</label>
+                        <input type="text" id="password" class="form-control" @bind="@user.Password" required/>
+                    </div>
+                    
+                    <div class="form-group">
+                        <AuthorizeView Roles="admin">
+                            <Authorized Context="adminContext">
+                            <label for="admin">É Admin</label>
+                                <input type="checkbox" id="isAdmin" @bind="@user.IsAdmin" />
+                            </Authorized>
+                        </AuthorizeView>  
+                    </div>
+                    <div class="text-center p-3 mb-3">
+                        <button class="btn btn-info">Salvar</button>
+                    </div>
+                </EditForm>
+
+                @if(showMessage)
+                {
+                    <p style="color: red;">@message</p>
+                }
+                
+                <AuthorizeView Roles="admin">
+                    <Authorized Context="adminContext">
+                        <NavLink href="/users">Listar usuários</NavLink>
+                    </Authorized>
+                </AuthorizeView> 
+            
+            </div>
+        </div>
+    </div>  
+</div>
+
+@code {
+    public User user { get; set; } = new ();
+    bool showMessage = false;
+    string? message;
+
+    private async Task AddUser() {
+        showMessage = true;
+
+        if(!await service.IsUserEmailUnique(user.Email)){
+            @* message = "This e-mail address already exists, try another one"; *@
+            message = "Já existe um usuário cadastrado com o e-mail informado.";
+            return;
+        }
+        user.CreatedAt = DateTime.UtcNow;
+        if (stateContainer.user is null){
+            await service.AddUserAsync(user);
+            message = "User added successfully";
+        } else {
+            await service.UpdateUserAsync(user);
+            message = "User updated successfully";
+            stateContainer.user = null;
+        }
+
+        user = new ();
+    }
+
+    protected override void OnInitialized(){
+        if (stateContainer.user is not null){
+            user = stateContainer.user;
+        }
+    }
+}

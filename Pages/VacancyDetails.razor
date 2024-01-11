@@ -1,0 +1,138 @@
+@page "/vagas/{id:int}"
+@inject Data.ApplicationServices service
+@inject IJSRuntime JsRuntime
+@inject NavigationManager NavManager
+@inject IF_VagasAuthenticationStateProvider IF_VagasAuthenticationStateProvider
+
+
+
+<div class="listingContainer">
+    <div class="listingContent">
+    @if(loading){
+        <div class="loading">
+            <span class="loader"></span>
+        </div>
+    }else{
+
+    @if(!noVacancy){
+
+        <div class="vacancyList">
+                <div class="vacancyItem">
+                    
+
+                    <div class="header">
+                        <div class="header-title">
+                            <i class="bi bi-briefcase-fill"></i>
+                            @vacancy.Title</div>
+                    </div>
+
+                    <div class="infos">
+                        <div class = "infos-item">
+                            <i class="bi bi-building"></i>
+                            @vacancy.Company</div>
+                        <div class = "infos-item">
+                            <i class="bi bi-signpost-fill"></i>
+                            @vacancy.Location</div>
+                    </div>
+
+                    <div class="description">
+                        @vacancy.Description
+                    </div>
+
+                    <div class="footer">
+                        <div>
+                            vaga postada em @vacancy.CreatedAt
+                        </div>
+                        <div>
+                            <a class="btn btn-primary" href="@vacancy.externalLinkToApply" target="_blank" @onclick="(()=>increaseApplications(vacancy))">
+                                <i class="bi bi-send-check-fill"></i>
+                                Candidatar
+                            </a>
+                            @if(IF_VagasAuthenticationStateProvider.CurrentUser.Id == vacancy.UserId ||
+                            IF_VagasAuthenticationStateProvider.CurrentUser.IsAdmin == true)
+                            {
+                                <button class="btn btn-danger" style = "margin-left:5px;" @onclick="(()=>DeleteVacancy(vacancy))">
+                                    <i class="bi bi-trash"></i>
+                                    deletar</button>
+                            }
+                        </div>
+                    </div>
+
+                </div>
+            
+        </div>
+        
+
+    }else{
+
+        <div class = "noResults">
+            <h1>Essa pagina não existe</h1>
+            <button type="button" class="btn btn-primary mb-2" @onclick="(()=>RedirecionarCadastro())">Cadastrar vaga</button>
+            <button type="button" class="btn btn-primary" @onclick="(()=>RedirecionarListagem())">Listagem de vagas</button>
+        </div>
+
+    }
+
+    }
+    </div>
+</div>
+
+
+
+
+@code{
+
+    [Parameter]
+    public int Id {get; set;}
+    public Data.Vacancy vacancy = new Data.Vacancy();
+    public bool loading = false;
+    public bool noVacancy = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetVacancy();
+    }
+
+    private async Task GetVacancy()
+    {
+        loading = true;
+        List<Data.Vacancy> vacancies = new List<Data.Vacancy>();
+        vacancies = await service.GetVacanciesAsync();
+        bool found = false;
+        foreach(var v in vacancies){
+            if(v.Id == this.Id)
+            {
+                this.vacancy = v;
+                found = true;
+                @* Console.WriteLine(v.Id); *@
+            }
+        }
+        loading = false;
+        if(!found)this.noVacancy = true;
+    }
+
+    public async Task DeleteVacancy(Data.Vacancy vacancy){
+         bool confirmed = await JsRuntime.InvokeAsync<bool>("confirm", "Tem certeza que deseja excluir esta vaga?");
+        if (confirmed)
+        {
+            await service.DeleteVacancyAsync(vacancy);
+            this.RedirecionarListagem();
+        }
+    }
+
+    public void RedirecionarCadastro(){
+        NavManager.NavigateTo("/cadastro-vaga");
+    }
+
+    public void RedirecionarListagem(){
+        NavManager.NavigateTo("/");
+    }
+
+    public async Task increaseApplications(Vacancy vacancy){
+    vacancy.Applications = vacancy.Applications + 1;
+    await service.UpdateApplicationNumber(vacancy);
+    }
+
+
+
+}

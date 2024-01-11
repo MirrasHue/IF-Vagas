@@ -1,0 +1,117 @@
+﻿@page "/projects"
+@attribute [AllowAnonymous]
+@inject ApplicationServices service
+@inject IJSRuntime JsRuntime
+@inject NavigationManager navigationManager
+@inject StateContainer stateContainer
+@inject IF_VagasAuthenticationStateProvider IF_VagasAuthenticationStateProvider
+
+<div class="container">
+    <div class="col-12 bg-light m-2 justify-content-start border"></div>
+    <div class="p-3 mb-3 bg-primary text-white text-center"><h2><strong>Projetos do(a) @user.Name</strong></h2>
+
+    <div class="row bg-light">
+        <table class="table table-bordered">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Id</th>
+                    <th>Nome</th>
+                    <th>Descrição</th>
+                    <th>URL</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (UserProjects.Any())
+                {
+                    @foreach (var project in UserProjects)
+                    {
+                        <tr>
+                            <td>@project.Id</td>
+                            <td>@project.Name</td>
+                            <td>@project.Description</td>
+                            <td>@project.WebsiteURL</td>
+
+                            <td>
+                                <button class="btn btn-secondary" @onclick="(()=>NavigateToEdit(project))">Editar</button>
+                            </td>
+                            <td>
+                                <button class="btn btn-danger" @onclick="(()=>DeleteProject(project))">Deletar</button>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr><td colspan="6"><strong>@user.Name has no projects yet</strong></td></tr>
+                }
+            </tbody>
+        </table>
+
+        @if(showMessage)
+        {
+            <p style="color: red;">@DeletedProjectName was deleted successfully</p>
+        }
+
+        @if(user.Id == IF_VagasAuthenticationStateProvider.CurrentUser.Id)
+        {
+           <button class="btn btn-link" @onclick="(()=>NavigateToNewProject())">Addicionar projeto</button>
+        }
+
+    </div>
+</div>
+</div>
+
+@code {
+
+    List<Project> UserProjects = new List<Project>();
+    User user { get; set; } = new ();
+    bool showMessage = false;
+    string? DeletedProjectName;
+    protected override async Task OnInitializedAsync()
+    {
+        await UpdateProjects();
+    }
+
+    private async Task UpdateProjects()
+    {
+        //limita qual usuario vai ser carregada para visualizacao. Caso seja um admin ele mostra o usuario carregado da pagina de listagem de projetos
+        if(IF_VagasAuthenticationStateProvider.CurrentUser.IsAdmin){
+            UserProjects = await service.GetProjectsFromUserAsync(user);
+        }else{
+            user= IF_VagasAuthenticationStateProvider.CurrentUser;
+            UserProjects = await service.GetProjectsFromUserAsync(user);
+        }
+        
+        
+    }
+
+    private async Task DeleteProject(Project proj)
+    {
+        bool confirmed = await JsRuntime.InvokeAsync<bool>("confirm", "Are you sure?");
+        if (confirmed)
+        {
+            showMessage = true;
+            DeletedProjectName = proj.Name;
+            await service.DeleteProjectAsync(proj);
+            await UpdateProjects();
+        }
+        else
+            showMessage = false;
+    }
+
+    private void NavigateToEdit(Project proj) {
+        stateContainer.SetUser(user);
+        stateContainer.SetProject(proj);
+        navigationManager.NavigateTo("/new-project");
+    }
+    private void NavigateToNewProject() {
+        stateContainer.SetUser(user);
+        stateContainer.SetProject(null);
+        navigationManager.NavigateTo("/new-project");
+    }
+    protected override void OnInitialized(){
+        if (stateContainer.user is not null){
+            user = stateContainer.user;
+        }
+    }
+}
